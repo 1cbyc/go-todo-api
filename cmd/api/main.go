@@ -18,6 +18,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/rs/zerolog/log"
+
+	_ "github.com/1cbyc/go-todo-api/docs" // This is required for swag to find your docs
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // @title Todo API
@@ -108,6 +112,7 @@ func main() {
 
 	// Swagger documentation
 	router.GET("/swagger/*any", handlers.SwaggerHandler)
+	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Create HTTP server
 	server := &http.Server{
