@@ -21,7 +21,7 @@ A sophisticated and professional Todo REST API built with Go, featuring clean ar
 - ✅ **Pagination** - Efficient data retrieval with metadata
 - ✅ **Soft Deletes** - Data preservation with logical deletion
 
-## 🏗️ Architecture
+<!-- ## 🏗️ Architecture
 
 ```
 ├── cmd/api/           # Application entry point
@@ -37,7 +37,7 @@ A sophisticated and professional Todo REST API built with Go, featuring clean ar
 │   ├── response/      # Standardized API responses
 │   └── validator/     # Request validation
 └── docs/              # Documentation
-```
+``` -->
 
 ## 🛠️ Technology Stack
 

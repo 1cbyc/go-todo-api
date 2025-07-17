@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	_ "github.com/1cbyc/go-todo-api/docs" // This is required for swag to find your docs
 	"github.com/1cbyc/go-todo-api/internal/config"
 	"github.com/1cbyc/go-todo-api/internal/handlers"
 	"github.com/1cbyc/go-todo-api/internal/middleware"
@@ -18,8 +19,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/rs/zerolog/log"
-
-	_ "github.com/1cbyc/go-todo-api/docs" // This is required for swag to find your docs
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -92,6 +91,9 @@ func main() {
 	// Health check endpoint
 	router.GET("/health", handlers.HealthCheck)
 
+	// Swagger documentation
+	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	// API routes
 	api := router.Group("/api/v1")
 	{
@@ -109,10 +111,6 @@ func main() {
 		// Metrics endpoint
 		api.GET("/metrics", handlers.Metrics)
 	}
-
-	// Swagger documentation
-	router.GET("/swagger/*any", handlers.SwaggerHandler)
-	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Create HTTP server
 	server := &http.Server{

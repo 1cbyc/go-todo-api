@@ -9,14 +9,14 @@ import (
 
 // Todo represents a todo item
 type Todo struct {
-	ID          uuid.UUID  `json:"id" gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
-	Title       string     `json:"title" gorm:"not null;size:255" validate:"required,min=1,max=255"`
-	Description string     `json:"description" gorm:"size:1000"`
-	Completed   bool       `json:"completed" gorm:"default:false"`
-	Priority    Priority   `json:"priority" gorm:"default:medium"`
-	DueDate     *time.Time `json:"due_date,omitempty"`
-	CreatedAt   time.Time  `json:"created_at" gorm:"autoCreateTime"`
-	UpdatedAt   time.Time  `json:"updated_at" gorm:"autoUpdateTime"`
+	ID          uuid.UUID      `json:"id" gorm:"type:uuid;primary_key"`
+	Title       string         `json:"title" gorm:"not null;size:255" validate:"required,min=1,max=255"`
+	Description string         `json:"description" gorm:"size:1000"`
+	Completed   bool           `json:"completed" gorm:"default:false"`
+	Priority    Priority       `json:"priority" gorm:"default:medium"`
+	DueDate     *time.Time     `json:"due_date,omitempty"`
+	CreatedAt   time.Time      `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt   time.Time      `json:"updated_at" gorm:"autoUpdateTime"`
 	DeletedAt   gorm.DeletedAt `json:"-" gorm:"index"`
 }
 
@@ -53,11 +53,11 @@ type CreateTodoRequest struct {
 
 // UpdateTodoRequest represents the request body for updating a todo
 type UpdateTodoRequest struct {
-	Title       *string     `json:"title,omitempty" validate:"omitempty,min=1,max=255"`
-	Description *string     `json:"description,omitempty" validate:"omitempty,max=1000"`
-	Completed   *bool       `json:"completed,omitempty"`
-	Priority    *Priority   `json:"priority,omitempty" validate:"omitempty,oneof=low medium high urgent"`
-	DueDate     *time.Time  `json:"due_date,omitempty"`
+	Title       *string    `json:"title,omitempty" validate:"omitempty,min=1,max=255"`
+	Description *string    `json:"description,omitempty" validate:"omitempty,max=1000"`
+	Completed   *bool      `json:"completed,omitempty"`
+	Priority    *Priority  `json:"priority,omitempty" validate:"omitempty,oneof=low medium high urgent"`
+	DueDate     *time.Time `json:"due_date,omitempty"`
 }
 
 // TodoResponse represents the response body for todo operations
