@@ -1,0 +1,398 @@
+basePath: /api/v1
+definitions:
+  models.CreateTodoRequest:
+    properties:
+      description:
+        maxLength: 1000
+        type: string
+      due_date:
+        type: string
+      priority:
+        allOf:
+        - $ref: '#/definitions/models.Priority'
+        enum:
+        - low
+        - medium
+        - high
+        - urgent
+      title:
+        maxLength: 255
+        minLength: 1
+        type: string
+    required:
+    - title
+    type: object
+  models.Meta:
+    properties:
+      has_next:
+        type: boolean
+      has_previous:
+        type: boolean
+      page:
+        type: integer
+      per_page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  models.Priority:
+    enum:
+    - low
+    - medium
+    - high
+    - urgent
+    type: string
+    x-enum-varnames:
+    - PriorityLow
+    - PriorityMedium
+    - PriorityHigh
+    - PriorityUrgent
+  models.TodoListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/models.TodoResponse'
+        type: array
+      meta:
+        $ref: '#/definitions/models.Meta'
+    type: object
+  models.TodoResponse:
+    properties:
+      completed:
+        type: boolean
+      created_at:
+        type: string
+      description:
+        type: string
+      due_date:
+        type: string
+      id:
+        type: string
+      priority:
+        $ref: '#/definitions/models.Priority'
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.UpdateTodoRequest:
+    properties:
+      completed:
+        type: boolean
+      description:
+        maxLength: 1000
+        type: string
+      due_date:
+        type: string
+      priority:
+        allOf:
+        - $ref: '#/definitions/models.Priority'
+        enum:
+        - low
+        - medium
+        - high
+        - urgent
+      title:
+        maxLength: 255
+        minLength: 1
+        type: string
+    type: object
+  response.ErrorResponse:
+    properties:
+      error: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  response.SuccessResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: A sophisticated and professional Todo REST API built with Go, Gin,
+    and GORM
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Todo API
+  version: "1.0"
+paths:
+  /health:
+    get:
+      consumes:
+      - application/json
+      description: Check if the API is running
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Health check
+      tags:
+      - health
+  /metrics:
+    get:
+      consumes:
+      - application/json
+      description: Get Prometheus metrics
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Prometheus metrics
+      tags:
+      - metrics
+  /todos:
+    get:
+      consumes:
+      - application/json
+      description: Get all todo items with pagination
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Items per page
+        in: query
+        name: per_page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.TodoListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get all todos
+      tags:
+      - todos
+    post:
+      consumes:
+      - application/json
+      description: Create a new todo item
+      parameters:
+      - description: Todo to create
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateTodoRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.TodoResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Create a new todo
+      tags:
+      - todos
+  /todos/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a todo item by its ID
+      parameters:
+      - description: Todo ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Delete a todo
+      tags:
+      - todos
+    get:
+      consumes:
+      - application/json
+      description: Get a specific todo item by its ID
+      parameters:
+      - description: Todo ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.TodoResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get a todo by ID
+      tags:
+      - todos
+    put:
+      consumes:
+      - application/json
+      description: Update an existing todo item
+      parameters:
+      - description: Todo ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Todo updates
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateTodoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.TodoResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Update a todo
+      tags:
+      - todos
+  /todos/{id}/toggle:
+    patch:
+      consumes:
+      - application/json
+      description: Toggle the completed status of a todo item
+      parameters:
+      - description: Todo ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.TodoResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Toggle todo completion status
+      tags:
+      - todos
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
